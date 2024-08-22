@@ -1,0 +1,19 @@
+{
+	"version": "0.2.0",
+	"configurations": [
+		{
+			"name": "OS-gdb",
+			"type": "cppdbg",
+			"preLaunchTask": "os-qemu",
+			"request": "launch",
+			"program": "${workspaceFolder}/code.elf",
+			"args": [
+				"-x",
+				".gdbinit"
+			],
+			"miDebuggerServerAddress": "localhost:1234",
+			"miDebuggerPath": "/usr/bin/riscv64-elf-gdb",
+			"cwd": "${workspaceFolder}",
+		},
+	],
+}

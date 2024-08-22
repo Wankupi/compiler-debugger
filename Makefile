@@ -31,11 +31,12 @@ clean:
 	rm -f code.elf
 	rm -f code.dump
 
-code.elf: src/linker.ld src/entry.o src/libmx.o src/mini-kernel.o $(UserAsm:.s=.o)
-	$(LD) $(LINK_FLAGS) -T src/linker.ld src/entry.o src/libmx.o $(UserAsm:.s=.o) src/mini-kernel.o -o code.elf
+code.elf: src/linker.ld src/entry.o src/libmx.o src/mini-kernel.o src/vtable.o $(UserAsm:.s=.o)
+	$(LD) $(LINK_FLAGS) -T src/linker.ld src/entry.o src/libmx.o src/vtable.o $(UserAsm:.s=.o) src/mini-kernel.o -o code.elf
 
 code.dump: code.elf
-	$(OBJDUMP) -D code.elf > code.dump	
+	$(OBJDUMP) -D code.elf | c++filt -t > code.dump
+
 
 %.o: %.s
 	$(CC) $(C_FLAGS) -c $< -o $@
@@ -49,7 +50,7 @@ code.dump: code.elf
 
 QEMU_RUN_ARGS := -nographic -machine virt -m 256M
 
-run: code.elf
+run: code.elf code.dump
 	@qemu-system-riscv32 $(QEMU_RUN_ARGS) -bios $<
 
 debug: code.elf code.dump

@@ -6,11 +6,13 @@
     .global  _start
 _start:
     la       sp, boot_stack_top
-    tail     mini_kernel_main
+    call     mini_kernel_main
+    la       sp, boot_stack_top
+    mret
 
 
     .macro   save_reg base, n
-    sw       x\n, \n*8(\base)
+    sw       x\n, \n*4(\base)
     .endm
 
 
@@ -57,12 +59,13 @@ _trap_entry:
     mv       a1, a0
     csrr     a0, mscratch
     save_reg a1, 10
-    tail     trap_handler
-
-
+    call     trap_handler
+1:
+    j        1b
 
     .section .bss
     .align   12
+    .global  trap_entry_regs
 trap_entry_regs: # 分配空间用于保存寄存器的数组
     .word    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
     .word    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0

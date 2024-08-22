@@ -25,3 +25,8 @@ extern "C" void sprintf();
 
 void print_string(const char *str);
 void print_hex_full(unsigned int a);
+
+extern "C" void shutdown();
+
+constexpr unsigned int MALLOC_START_ADDR = 0x81000000;
+constexpr unsigned int MALLOC_END_ADDR = 0x90000000;

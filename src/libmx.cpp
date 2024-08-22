@@ -45,7 +45,7 @@ extern "C" int memcmp(const void *str1, const void *str2, size_t n) {
 	}
 	return 0;
 }
-extern "C" void *my_memmove(void *dest, const void *src, size_t n) {
+extern "C" void *memmove(void *dest, const void *src, size_t n) {
 	unsigned char *d = static_cast<unsigned char *>(dest);
 	const unsigned char *s = static_cast<const unsigned char *>(src);
 
@@ -64,7 +64,7 @@ extern "C" void *my_memmove(void *dest, const void *src, size_t n) {
 }
 
 
-void *heap_top = reinterpret_cast<void *>(0x81000000);
+void *heap_top = reinterpret_cast<void *>(MALLOC_START_ADDR);
 
 constexpr size_t ALIGN = 64;
 
@@ -295,6 +295,11 @@ void printf(const char *format, ...) {
 					print_string(value);
 					break;
 				}
+				case 'x': {
+					unsigned int value = va_arg(args, unsigned int);
+					print_hex(value);
+					break;
+				}
 				default:
 					// 处理不支持的格式符，输出原样
 					putchar('%');
@@ -315,4 +320,8 @@ extern "C" void sscanf() {
 }
 extern "C" void sprintf() {
 	// not implemented
+}
+
+extern "C" void shutdown() {
+	*reinterpret_cast<volatile unsigned int *>(0x100000) = 0x5555;
 }

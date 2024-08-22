@@ -39,7 +39,6 @@ SECTIONS
     }
     ebss = .;
 
-    ekernel = .;
     . = ALIGN(4K);
 
     /DISCARD/ : {
