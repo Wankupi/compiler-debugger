@@ -1,8 +1,8 @@
 CC := /usr/bin/riscv64-elf-gcc
 GCC := /usr/bin/riscv64-elf-g++
-LD := /usr/bin/riscv32-elf-ld
-OBJCOPY := /usr/bin/riscv32-elf-objcopy
-OBJDUMP := /usr/bin/riscv32-elf-objdump
+LD := /usr/bin/riscv64-elf-ld
+OBJCOPY := /usr/bin/riscv64-elf-objcopy
+OBJDUMP := /usr/bin/riscv64-elf-objdump
 GDB := riscv64-elf-gdb
 
 MARCH_STRING := rv32im_zicsr
@@ -12,7 +12,7 @@ CXX_FLAGS := -march=$(MARCH_STRING) -mabi=ilp32 -g -Iinclude -std=c++17 -Wno-bui
 
 UserAsm := test.s builtin.s
 
-LINK_FLAGS := -nostdlib
+LINK_FLAGS := -nostdlib -m elf32lriscv
 
 all: code.elf code.dump
 
