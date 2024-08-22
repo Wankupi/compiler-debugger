@@ -16,9 +16,12 @@ extern "C" char *strcpy(char *dest, const char *src);
 extern "C" size_t strlen(const char *str);
 extern "C" char *strcat(char *dest, const char *src);
 extern "C" int strcmp(const char *str1, const char *str2);
-extern "C" void printInt(int a);
+extern "C" void print_int(int a);
 
-extern "C" void scanf();
-extern "C" void printf();
+extern "C" void scanf(const char *format, void *output);
+extern "C" void printf(const char *format, ...);
 extern "C" void sscanf();
 extern "C" void sprintf();
+
+void print_string(const char *str);
+void print_hex_full(unsigned int a);

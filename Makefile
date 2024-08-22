@@ -5,9 +5,10 @@ OBJCOPY := /usr/bin/riscv32-elf-objcopy
 OBJDUMP := /usr/bin/riscv32-elf-objdump
 GDB := riscv64-elf-gdb
 
+MARCH_STRING := rv32im_zicsr
 
-C_FLAGS := -march=rv32im -mabi=ilp32 -g -Iinclude -std=c17
-CXX_FLAGS := -march=rv32im -mabi=ilp32 -g -Iinclude -std=c++17 -Wno-builtin-declaration-mismatch
+C_FLAGS := -march=$(MARCH_STRING) -mabi=ilp32 -g -Iinclude -std=c17
+CXX_FLAGS := -march=$(MARCH_STRING) -mabi=ilp32 -g -Iinclude -std=c++17 -Wno-builtin-declaration-mismatch
 
 UserAsm := test.s builtin.s
 

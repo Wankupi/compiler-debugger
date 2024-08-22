@@ -1,5 +1,6 @@
 #include "libmx.h"
 #include "uart.h"
+#include <cstdarg>
 
 extern "C" int putchar(int ch) {
 	uart::uart_putc(ch);
@@ -16,7 +17,8 @@ extern "C" int puts(const char *str) {
 }
 
 extern "C" int getchar() {
-	return uart::uart_getc();
+	// note that EOF is not supported now
+	return (unsigned char) uart::uart_getc();
 }
 
 extern "C" void *memset(void *addr, int c, size_t n) {
@@ -146,7 +148,7 @@ extern "C" int strcmp(const char *str1, const char *str2) {
 	return 0;
 }
 
-extern "C" void printInt(int a) {
+extern "C" void print_int(int a) {
 	if (a == 0) {
 		putchar('0');
 		return;
@@ -165,8 +167,152 @@ extern "C" void printInt(int a) {
 		putchar(buf[i]);
 }
 
+const int EOF = -1;
 
-extern "C" void scanf() {}
-extern "C" void printf() {}
-extern "C" void sscanf() {}
-extern "C" void sprintf() {}
+bool isspace(char c) {
+	return (c == ' ' ||  // 空格
+			c == '\n' || // 换行符
+			c == '\t' || // 水平制表符
+			c == '\r' || // 回车符
+			c == '\v' || // 垂直制表符
+			c == '\f');  // 换页符
+}
+
+extern "C" void scanf(const char *format, void *output) {
+	int c;
+	if (format[0] == '%' && format[2] == '\0') {
+		switch (format[1]) {
+			case 'd': {
+				int num = 0;
+				int sign = 1;
+				// 处理正负号
+				c = getchar();
+				if (c == '-') {
+					sign = -1;
+					c = getchar();
+				}
+				// 读取数字
+				while (c >= '0' && c <= '9') {
+					num = num * 10 + (c - '0');
+					c = getchar();
+				}
+				*(int *) output = num * sign;
+				break;
+			}
+			case 'c': {
+				// 读取单个字符
+				c = getchar();
+				*(char *) output = c;
+				break;
+			}
+			case 's': {
+				// 读取字符串，直到遇到空白字符或EOF
+				char *str = (char *) output;
+				c = getchar();
+				while (!isspace(c) && c != EOF) {
+					*str++ = c;
+					c = getchar();
+				}
+				*str = '\0'; // 字符串结束符
+				break;
+			}
+			default:
+				// 如果需要支持其他格式，请提issue
+				break;
+		}
+	}
+}
+
+// 辅助函数：输出一个字符
+void print_char(char c) {
+	putchar(c);
+}
+
+// 辅助函数：输出一个字符串
+void print_string(const char *str) {
+	while (*str) {
+		putchar(*str++);
+	}
+}
+
+void print_hex(unsigned int a) {
+	char buf[16];
+	int i = 0;
+	while (a) {
+		int t = a % 16;
+		if (t < 10) {
+			buf[i++] = t + '0';
+		}
+		else {
+			buf[i++] = t - 10 + 'a';
+		}
+		a /= 16;
+	}
+	if (i == 0) {
+		putchar('0');
+	}
+	while (i--) {
+		putchar(buf[i]);
+	}
+}
+
+void print_hex_full(unsigned int a) {
+	// always 8 digit
+	putchar('0');
+	putchar('x');
+	for (int i = 28; i >= 0; i -= 4) {
+		int t = (a >> i) & 0xf;
+		if (t < 10) {
+			putchar(t + '0');
+		}
+		else {
+			putchar(t - 10 + 'a');
+		}
+	}
+}
+
+// 实现 printf 函数
+void printf(const char *format, ...) {
+	va_list args;
+	va_start(args, format);
+
+	while (*format) {
+		if (*format == '%') {
+			format++;
+			switch (*format) {
+				case 'd': {
+					int value = va_arg(args, int);
+					print_int(value);
+					break;
+				}
+				case 'c': {
+					char value = static_cast<char>(va_arg(args, int)); // char 参数提升为 int
+					print_char(value);
+					break;
+				}
+				case 's': {
+					const char *value = va_arg(args, const char *);
+					print_string(value);
+					break;
+				}
+				default:
+					// 处理不支持的格式符，输出原样
+					putchar('%');
+					putchar(*format);
+					break;
+			}
+		}
+		else {
+			putchar(*format);
+		}
+		format++;
+	}
+	va_end(args);
+}
+
+extern "C" void sscanf() {
+	// not implemented
+}
+extern "C" void sprintf() {
+	// not implemented
+}
