@@ -12,16 +12,7 @@ CXX_FLAGS := -march=$(MARCH_STRING) -mabi=ilp32 -g -Iinclude -std=c++17 -Wno-bui
 
 UserAsm := test.s builtin.s
 
-# LINK_FLAGS := -march=rv32i -mabi=ilp32 -nostdlib
-# LINK_FLAGS := -march=elf32lriscv
-# src/entry.o: src/entry.s
-# 	$(CC) $(C_FLAGS) -c $< -o $@
-
-# src/libmx.cpp.o: src/libmx.cpp
-# 	$(GCC) $(CXX_FLAGS) -c $< -o $@
-
-# build/mini-kernel.cpp.o: build/mini-kernel.cpp
-# 	$(GCC) $(CXX_FLAGS) -c $< -o $@
+LINK_FLAGS := -nostdlib
 
 all: code.elf code.dump
 
