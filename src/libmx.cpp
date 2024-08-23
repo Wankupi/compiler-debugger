@@ -13,6 +13,7 @@ extern "C" int puts(const char *str) {
 		uart::uart_putc(*str++);
 		count++;
 	}
+	uart::uart_putc('\n');
 	return count;
 }
 

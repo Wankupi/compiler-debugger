@@ -54,14 +54,17 @@ code.dump: code.elf
 
 endif
 
-
-QEMU_RUN_ARGS := -nographic -machine virt -m 256M
+input_file :=
+QEMU_RUN_ARGS := -nographic -machine virt -m 256M -monitor none
+ifneq ($(input_file),)
+QEMU_REDIRECT := < $(input_file)
+endif
 
 run: all
-	@qemu-system-riscv32 $(QEMU_RUN_ARGS) -bios code.elf
+	@qemu-system-riscv32 $(QEMU_RUN_ARGS) -bios code.elf $(QEMU_REDIRECT)
 
 debug: all
-	@qemu-system-riscv32 $(QEMU_RUN_ARGS) -bios code.elf -s -S
+	@qemu-system-riscv32 $(QEMU_RUN_ARGS) -bios code.elf -s -S $(QEMU_REDIRECT)
 
 gdb: all
 	@$(GDB) -ex 'target remote localhost:1234' -x '.gdbinit'

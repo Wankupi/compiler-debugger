@@ -20,7 +20,8 @@ inline void uart_init() {
 	*lcr = 1 << 7;
 	*thr = 0x03;
 	*lcr = 0b11;
-	*fcr = 1 | (1 << 1) | (1 << 2);
+	// *fcr = 1 | (1 << 1) | (1 << 2);
+	*fcr = 0; // do not enable FIFO, otherwise the first byte will be lost
 	// *ier = 1 | (1 << 1); // enable read and write interrupts
 	*ier = 0; // do not enable interrupts
 }
